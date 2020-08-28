@@ -10,9 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -41,16 +43,27 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final VideoViewHolder holder, int position) {
 
         VideoModel videoModel = videoModelList.get(position);
-        SimpleExoPlayer player;
+        final SimpleExoPlayer player;
         if(simpleExoPlayerList.size() > position && simpleExoPlayerList.get(position) != null){
             player = simpleExoPlayerList.get(position);
         }else{
             player = new SimpleExoPlayer.Builder(context).build();
             MediaSource mediaSource = buildMediaSource(videoModel.getVideoSrc());
             player.prepare(mediaSource, false, false);
+            player.setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+            holder.videoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+            holder.videoPlayerView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (player.isPlaying()) {
+                        player.setPlayWhenReady(false);
+                        holder.videoPlayerView.showController();
+                    }
+                }
+            });
             simpleExoPlayerList.add(player);
         }
 
@@ -85,6 +98,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     @Override
     public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
 
+        releaseAllPlayer();
+
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    public void releaseAllPlayer(){
         for (SimpleExoPlayer player :
                 simpleExoPlayerList) {
             if (player != null) {
@@ -92,6 +111,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                 player.release();
             }
         }
-        super.onDetachedFromRecyclerView(recyclerView);
+
     }
 }
