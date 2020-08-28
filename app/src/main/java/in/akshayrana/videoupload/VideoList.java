@@ -86,7 +86,7 @@ public class VideoList extends AppCompatActivity {
                                 facebookShimmerLayout.stopShimmer();
                                 facebookShimmerLayout.setVisibility(View.GONE);
                                 adapter.notifyDataSetChanged();
-                                recyclerView.suppressLayout(true);
+//                                recyclerView.suppressLayout(true);
 
                             }else{
                                 Toast.makeText(VideoList.this, "Error while getting videos.", Toast.LENGTH_SHORT).show();

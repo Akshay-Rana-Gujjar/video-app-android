@@ -41,6 +41,7 @@ public class NodeJsFileUploadActivity extends AppCompatActivity {
     private TextView progressPercentageTextView;
     private EditText videoTitleEditText;
     private Button UploadButton;
+    private TextView chooseVideoLabel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class NodeJsFileUploadActivity extends AppCompatActivity {
         chooseVideoImageView = findViewById(R.id.chooseVideoImageView);
         videoTitleEditText = findViewById(R.id.videoTitleEditText);
         progressPercentageTextView = findViewById(R.id.progressPercentageTextView);
+        chooseVideoLabel = findViewById(R.id.chooseVideoLabel);
 
         chooseVideoImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,14 +115,14 @@ public class NodeJsFileUploadActivity extends AppCompatActivity {
                                     if(status == 200){
 
                                         String uploadedImageUrl = response.getString("videoUrl");
-                                        Toast.makeText(NodeJsFileUploadActivity.this, "Success", Toast.LENGTH_SHORT).show();
                                         uploadingProgress.setVisibility(View.GONE);
                                         progressPercentageTextView.setVisibility(View.GONE);
-                                        Toast.makeText(NodeJsFileUploadActivity.this, "Successful Uploaded!", Toast.LENGTH_SHORT).show();
-                                        fileUri = null;
+                                        chooseVideoLabel.setVisibility(View.VISIBLE);
                                         chooseVideoImageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.video_placeholder, null));
-                                        enableInputs(true);
                                         videoTitleEditText.setText(null);
+                                        enableInputs(true);
+                                        fileUri = null;
+                                        Toast.makeText(NodeJsFileUploadActivity.this, "Successful Uploaded!", Toast.LENGTH_SHORT).show();
 
 
                                     }else{
@@ -177,6 +179,8 @@ public class NodeJsFileUploadActivity extends AppCompatActivity {
             long duration = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
             chooseVideoImageView.setImageBitmap(retriever.getFrameAtTime(Math.round(duration*0.4), MediaMetadataRetriever.OPTION_CLOSEST));
             UploadButton.setVisibility(View.VISIBLE);
+
+            chooseVideoLabel.setVisibility(View.GONE);
         }
     }
 
