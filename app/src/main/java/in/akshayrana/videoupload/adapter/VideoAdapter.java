@@ -5,12 +5,14 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -53,8 +55,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             player = new SimpleExoPlayer.Builder(context).build();
             MediaSource mediaSource = buildMediaSource(videoModel.getVideoSrc());
             player.prepare(mediaSource, false, false);
-            player.setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-            holder.videoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
+//            player.setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+//            holder.videoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
             holder.videoPlayerView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -67,7 +69,21 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             simpleExoPlayerList.add(player);
         }
 
+        player.addListener(new Player.EventListener() {
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+
+                if(playbackState == Player.STATE_BUFFERING){
+                    holder.progressBarBuffering.setVisibility(View.VISIBLE);
+                }else{
+                    holder.progressBarBuffering.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+
         holder.videoPlayerView.setPlayer(player);
+
         holder.videoTitleTextView.setText(videoModel.getVideoTitle());
     }
 
@@ -80,11 +96,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
         PlayerView videoPlayerView;
         TextView videoTitleTextView;
+        ProgressBar progressBarBuffering;
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
             videoPlayerView = itemView.findViewById(R.id.videoPlayerView);
             videoTitleTextView = itemView.findViewById(R.id.videoTitleTextView);
+            progressBarBuffering = itemView.findViewById(R.id.progressBarBuffering);
         }
     }
 

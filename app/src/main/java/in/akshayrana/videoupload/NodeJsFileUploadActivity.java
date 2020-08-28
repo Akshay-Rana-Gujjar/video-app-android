@@ -89,6 +89,7 @@ public class NodeJsFileUploadActivity extends AppCompatActivity {
                 }
                 uploadingProgress = findViewById(R.id.uploadingProgress);
                 uploadingProgress.setVisibility(View.VISIBLE);
+                progressPercentageTextView.setVisibility(View.VISIBLE);
 
                 File videoFile = new File(fileUri.getPath());
 
